@@ -1,7 +1,10 @@
-exports.handler = async (event: any) => {
-  return {
-    statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: event }),
-  };
+import { DATABASE } from "../database";
+import { createNotFoundResponse, createSuccessResponse } from "../utils/response";
+
+exports.handler = async () => {
+  if (DATABASE && DATABASE.length > 0) {
+    return createSuccessResponse({ products: DATABASE });
+  }
+
+  return createNotFoundResponse({ message: 'Products not found' });
 };

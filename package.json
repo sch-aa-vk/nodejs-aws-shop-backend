@@ -2,16 +2,18 @@
   "name": "nodejs-aws-shop-backend",
   "version": "0.1.0",
   "bin": {
-    "nodejs-aws-shop-backend": "bin/nodejs-aws-shop-backend.js"
+    "nodejs-aws-shop-backend": "bin/index.js"
   },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "cdk:deploy": "tsc && cdk synth && cdk deploy"
+    "cdk:deploy": "tsc && cdk synth && cdk deploy",
+    "cdk:destroy": "cdk destroy"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.138",
     "@types/jest": "^29.5.12",
     "@types/node": "20.14.2",
     "aws-cdk": "2.146.0",

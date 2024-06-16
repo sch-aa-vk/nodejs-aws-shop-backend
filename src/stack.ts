@@ -17,15 +17,16 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
 
     const api = new apigateway.RestApi(this, 'ApiGatewayID');
 
-    const productsResource = this.createLambdaWithResource('getProductsList', 'src/lambda', 'products', HttpMethodEnum.GET, api.root);
-    this.createLambdaWithResource('getProductById', 'src/lambda', '{productId}', HttpMethodEnum.GET, productsResource);
+    const productsResource = this.createLambdaWithResource('getProductsList', 'products', HttpMethodEnum.GET, api.root);
+    this.createLambdaWithResource('getProductsById', '{productId}', HttpMethodEnum.GET, productsResource);
   }
 
-  private createLambdaWithResource(functionId: string, handler: string, resourcePath: string, method: HttpMethod, api: cdk.aws_apigateway.Resource | cdk.aws_apigateway.IResource) {
+  private createLambdaWithResource(functionId: string, resourcePath: string, method: HttpMethod, api: cdk.aws_apigateway.Resource | cdk.aws_apigateway.IResource) {
     const fn = new lambda.Function(this, functionId, {
       runtime: lambda.Runtime.NODEJS_20_X,
-      code: lambda.Code.fromAsset('src/lambda'),
-      handler: `${functionId}.handler`,
+      code: lambda.Code.fromAsset('src'),
+      handler: `lambda/${functionId}.handler`,
+      functionName: `nodejs-aws-shop-${functionId}`,
     });
 
     const resource = api.addResource(resourcePath);
