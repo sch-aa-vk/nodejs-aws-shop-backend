@@ -16,5 +16,5 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     return createNotFoundResponse({ message: 'Product not found' });
   }
 
-  return createSuccessResponse({ product });
+  return createSuccessResponse(product);
 };

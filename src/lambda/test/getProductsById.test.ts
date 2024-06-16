@@ -17,12 +17,10 @@ describe("getProductsById", () => {
     expect(response.body).toBeDefined();
 
     expect(JSON.parse(response.body)).toEqual({
-      product: {
-        id: 1,
-        title: "Pie Shell - 5",
-        description: "Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.",
-        price: 25.79
-      }
+      id: 1,
+      title: "Pie Shell - 5",
+      description: "Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.",
+      price: 25.79
     });
   });
 

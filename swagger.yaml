@@ -45,10 +45,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  product:
-                    $ref: '#/components/schemas/Product'
+                $ref: '#/components/schemas/Product'
         '404':
           description: Product not found
         '500':
@@ -73,3 +70,6 @@ components:
         price:
           type: number
           format: double
+        count:
+          type: integer
+          format: int64
