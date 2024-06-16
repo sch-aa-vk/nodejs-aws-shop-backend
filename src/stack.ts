@@ -15,7 +15,10 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const api = new apigateway.RestApi(this, 'ApiGatewayID');
+    const api = new apigateway.RestApi(this, 'nodejs-aws-shop-api', {
+      restApiName: 'Node.js AWS Shop API',
+      description: 'The AWS CDK stack for the Node.js AWS Shop Backend API',
+    });
 
     const productsResource = this.createLambdaWithResource('getProductsList', 'products', HttpMethodEnum.GET, api.root);
     this.createLambdaWithResource('getProductsById', '{productId}', HttpMethodEnum.GET, productsResource);

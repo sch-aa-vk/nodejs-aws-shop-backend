@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: Swagger Product Service
+  version: 1.0.0
+servers:
+  - url: https://3uyxknzvpb.execute-api.us-east-1.amazonaws.com/prod
+tags:
+  - name: products
+    description: Get products from Product Service Database
+paths:
+  /products:
+    get:
+      tags:
+        - products
+      summary: Get list of products
+      operationId: getProductsList
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Products'
+        '502':
+          description: Server error
+  
+  /products/{productId}:
+    get:
+      tags:
+        - products
+      summary: Return product by ID
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type : integer
+            format: int64
+      operationId: getProductsbyId
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+        '500':
+          description: Invalid product id
+        '502':
+          description: Server error
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        products:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Product'
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          maximum: 1000
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
