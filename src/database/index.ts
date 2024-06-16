@@ -1,4 +1,6 @@
-export const DATABASE = [{"id":1,"title":"Pie Shell - 5","description":"Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.","price":25.79},
+import { ProductType } from "../utils/types";
+
+export const DATABASE: ProductType[] = [{"id":1,"title":"Pie Shell - 5","description":"Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.","price":25.79},
 {"id":2,"title":"Rabbit - Saddles","description":"Donec semper sapien a libero. Nam dui. Proin leo odio, porttitor id, consequat in, consequat ut, nulla.","price":10.21},
 {"id":3,"title":"Corn - Cream, Canned","description":"Morbi odio odio, elementum eu, interdum eu, tincidunt in, leo.","price":27.97},
 {"id":4,"title":"Lettuce - California Mix","description":"Aenean auctor gravida sem.","price":31.93},
