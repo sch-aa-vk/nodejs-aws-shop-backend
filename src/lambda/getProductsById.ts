@@ -6,11 +6,11 @@ import { ProductType } from "../utils/types";
 export const handler = async (event: APIGatewayProxyEvent) => {
   const { productId } = event.pathParameters as APIGatewayProxyEventPathParameters;
 
-  if (!productId || isNaN(Number(productId))) {
+  if (!productId) {
     return createErrorResponse({ message: 'Invalid product id' });
   }
 
-  const product: ProductType | undefined = DATABASE.find((product) => product.id === Number(productId));
+  const product: ProductType | undefined = DATABASE.find((product) => product.id === productId);
 
   if (!product) {
     return createNotFoundResponse({ message: 'Product not found' });
