@@ -1,18 +1,15 @@
-require('dotenv').config();
-const { DynamoDB, config } = require('aws-sdk');
+const config = require("../../config");
+const { PutItemCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
 const { DATABASE, STOCKS } = require('./index');
-
-config.update({ region: process.env.CDK_DEFAULT_REGION });
-
-const dynamodb = new DynamoDB.DocumentClient();
+const { dynamodb } = require('./dynamodbClient');
 
 async function fillProductsTable() {
   try {
     for (const item of DATABASE) {
-      await dynamodb.put({
-        TableName: String(process.env.PRODUCTS_TABLE_NAME),
+      await dynamodb.send(new PutItemCommand({
+        TableName: config.PRODUCTS_TABLE_NAME,
         Item: item,
-      }).promise();
+      }));
 
       console.log(`Inserted item with id: ${item.id}`)
     }
@@ -26,10 +23,10 @@ async function fillProductsTable() {
 async function fillStocksTable() {
   try {
     for (const item of STOCKS) {
-      await dynamodb.put({
-        TableName: String(process.env.STOCKS_TABLE_NAME),
+      await dynamodb.send(new PutItemCommand({
+        TableName: config.STOCKS_TABLE_NAME,
         Item: item,
-      }).promise();
+      }));
 
       console.log(`Inserted stock for product with id: ${item.product_id}`)
     }
