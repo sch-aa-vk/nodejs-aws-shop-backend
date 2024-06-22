@@ -24,6 +24,7 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
 
     const productsResource = this.createLambdaWithResource('getProductsList', 'products', HttpMethodEnum.GET, api.root);
     this.createLambdaWithResource('getProductsById', '{productId}', HttpMethodEnum.GET, productsResource);
+    this.createLambdaWithResource('createProduct', 'create', HttpMethodEnum.POST, productsResource);
   }
 
   private createLambdaWithResource(functionId: string, resourcePath: string, method: HttpMethod, api: cdk.aws_apigateway.Resource | cdk.aws_apigateway.IResource) {

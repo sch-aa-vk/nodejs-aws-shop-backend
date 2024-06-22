@@ -3,6 +3,8 @@ import { dynamodb } from "../database/dynamodbClient";
 import { createErrorResponse, createSuccessResponse } from "../utils/response";
 
 export const handler = async () => {
+  console.log('Incomig request: Get Products List');
+
   try {
     const { Items: products } = await dynamodb.send(new ScanCommand({
       TableName: String(process.env.PRODUCTS_TABLE_NAME),

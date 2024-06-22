@@ -3,7 +3,7 @@ info:
   title: Swagger Product Service
   version: 1.0.0
 servers:
-  - url: https://3uyxknzvpb.execute-api.us-east-1.amazonaws.com/prod
+  - url: https://npfagdphr1.execute-api.us-east-1.amazonaws.com/prod
 tags:
   - name: products
     description: Get products from Product Service Database
@@ -52,6 +52,28 @@ paths:
           description: Invalid product id
         '502':
           description: Server error
+          
+  /products/create:
+    post:
+      tags:
+        - products
+      summary: Create product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostProduct'
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Product not found
+        '500':
+          description: Invalid product id
+        '502':
+          description: Server error
 
 components:
   schemas:
@@ -73,3 +95,15 @@ components:
         count:
           type: integer
           format: int64
+    PostProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          example: 'Product Title'
+        description:
+          type: string
+          example: 'Product Description'
+        price:
+          type: number
+          format: double
