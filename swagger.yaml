@@ -53,7 +53,7 @@ paths:
         '502':
           description: Server error
           
-  /products/create:
+  /products:
     post:
       tags:
         - products
@@ -69,7 +69,7 @@ paths:
         '200':
           description: Successful operation
         '404':
-          description: Product not found
+          description: Product body invalid
         '500':
           description: Invalid product id
         '502':
