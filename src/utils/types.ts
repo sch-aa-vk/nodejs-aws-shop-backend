@@ -1,7 +1,11 @@
 export type ProductType = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   price: number;
-  count: number;
 };
+
+export type StockType = {
+  product_id: string;
+  count: number;
+}

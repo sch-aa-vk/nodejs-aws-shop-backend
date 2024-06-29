@@ -2,14 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
-enum HttpMethodEnum {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-}
+import * as iam from 'aws-cdk-lib/aws-iam';
+import config from '../config';
 
 export class NodejsAwsShopBackendStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -20,21 +14,55 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
       description: 'The AWS CDK stack for the Node.js AWS Shop Backend API',
     });
 
-    const productsResource = this.createLambdaWithResource('getProductsList', 'products', HttpMethodEnum.GET, api.root);
-    this.createLambdaWithResource('getProductsById', '{productId}', HttpMethodEnum.GET, productsResource);
-  }
-
-  private createLambdaWithResource(functionId: string, resourcePath: string, method: HttpMethod, api: cdk.aws_apigateway.Resource | cdk.aws_apigateway.IResource) {
-    const fn = new lambda.Function(this, functionId, {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      code: lambda.Code.fromAsset('src'),
-      handler: `lambda/${functionId}.handler`,
-      functionName: `nodejs-aws-shop-${functionId}`,
+    const dynamodbPolicy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['dynamodb:Scan', 'dynamodb:PutItem', 'dynamodb:GetItem'],
+      resources: ['*'],
     });
 
-    const resource = api.addResource(resourcePath);
-    resource.addMethod(method, new apigateway.LambdaIntegration(fn));
+    const getProductsListLambda = new lambda.Function(this, 'getProductsList', {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      code: lambda.Code.fromAsset('src'),
+      handler: `lambda/getProductsList.handler`,
+      functionName: `nodejs-aws-shop-getProductsList`,
+      environment: {
+        PRODUCTS_TABLE_NAME: config.PRODUCTS_TABLE_NAME,
+        STOCKS_TABLE_NAME: config.STOCKS_TABLE_NAME,
+        CDK_DEFAULT_REGION: config.CDK_DEFAULT_REGION,
+      }
+    });
 
-    return resource;
+    const getProductsByIdLambda = new lambda.Function(this, 'getProductsById', {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      code: lambda.Code.fromAsset('src'),
+      handler: `lambda/getProductsById.handler`,
+      functionName: `nodejs-aws-shop-getProductsById`,
+      environment: {
+        PRODUCTS_TABLE_NAME: config.PRODUCTS_TABLE_NAME,
+        STOCKS_TABLE_NAME: config.STOCKS_TABLE_NAME,
+        CDK_DEFAULT_REGION: config.CDK_DEFAULT_REGION,
+      }
+    });
+
+    const createProductLambda = new lambda.Function(this, 'createProduct', {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      code: lambda.Code.fromAsset('src'),
+      handler: `lambda/createProduct.handler`,
+      functionName: `nodejs-aws-shop-createProduct`,
+      environment: {
+        PRODUCTS_TABLE_NAME: config.PRODUCTS_TABLE_NAME,
+        STOCKS_TABLE_NAME: config.STOCKS_TABLE_NAME,
+        CDK_DEFAULT_REGION: config.CDK_DEFAULT_REGION,
+      }
+    });
+    
+    getProductsListLambda.addToRolePolicy(dynamodbPolicy);
+    getProductsByIdLambda.addToRolePolicy(dynamodbPolicy);
+    createProductLambda.addToRolePolicy(dynamodbPolicy);
+
+    const products = api.root.addResource('products');
+    products.addMethod('GET', new apigateway.LambdaIntegration(getProductsListLambda));
+    products.addResource('{productId}').addMethod('GET', new apigateway.LambdaIntegration(getProductsByIdLambda));
+    products.addMethod('POST', new apigateway.LambdaIntegration(createProductLambda));
   }
 }
