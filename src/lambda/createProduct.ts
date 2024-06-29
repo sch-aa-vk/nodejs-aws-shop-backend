@@ -19,11 +19,12 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return createNotFoundResponse({ message: 'Missing required filed. Please insert followinf data: price, title, description' });
     }
 
+    const productId = crypto.randomUUID();
     const { $metadata: { httpStatusCode } } = await dynamodb.send(new PutCommand({
       TableName: String(process.env.PRODUCTS_TABLE_NAME),
       Item: {
         ...item,
-        id: crypto.randomUUID(),
+        id: productId,
       },
     }));
 
@@ -31,7 +32,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       throw new Error('Status code is not 200');
     }
 
-    return createSuccessResponse({ message: 'Product created' });
+    return createSuccessResponse({ message: 'Product created', id: productId });
   } catch (error) {
     console.error('Error inserting data:', error);
 
