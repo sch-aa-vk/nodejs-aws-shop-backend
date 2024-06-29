@@ -19,6 +19,22 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return createNotFoundResponse({ message: 'Missing required filed. Please insert followinf data: price, title, description' });
     }
 
+    if (typeof item.price !== 'number') {
+      return createNotFoundResponse({ message: 'Price must be a number' });
+    }
+
+    if (item.price <= 0) {
+      return createNotFoundResponse({ message: 'Price must be greater than 0' });
+    }
+
+    if (typeof item.title !== 'string' || item.title.length < 1) {
+      return createNotFoundResponse({ message: 'Title must be a string' });
+    }
+
+    if (typeof item.description !== 'string' || item.description.length < 1) {
+      return createNotFoundResponse({ message: 'Description must be a string' });
+    }
+
     const productId = crypto.randomUUID();
     const { $metadata: { httpStatusCode } } = await dynamodb.send(new PutCommand({
       TableName: String(process.env.PRODUCTS_TABLE_NAME),
