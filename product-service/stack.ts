@@ -11,7 +11,7 @@ export class ProductServiceStack extends cdk.Stack {
 
     const api = new apigateway.RestApi(this, 'nodejs-aws-shop-product-stack-api', {
       restApiName: 'Node.js AWS Shop API',
-      description: 'The AWS CDK stack for the Node.js AWS Shop Backend API',
+      description: 'The AWS CDK Product stack for the Node.js AWS Shop Backend API',
     });
 
     const dynamodbPolicy = new iam.PolicyStatement({
