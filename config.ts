@@ -8,6 +8,7 @@ interface ENV {
   CDK_DEFAULT_REGION: string;
   PRODUCTS_TABLE_NAME: string;
   STOCKS_TABLE_NAME: string;
+  IMPORTS_BUCKET_NAME: string;
 }
 
 const getConfig = (): ENV => {
@@ -16,6 +17,7 @@ const getConfig = (): ENV => {
     CDK_DEFAULT_REGION: String(process.env.CDK_DEFAULT_REGION),
     PRODUCTS_TABLE_NAME: String(process.env.PRODUCTS_TABLE_NAME),
     STOCKS_TABLE_NAME: String(process.env.STOCKS_TABLE_NAME),
+    IMPORTS_BUCKET_NAME: String(process.env.IMPORTS_BUCKET_NAME),
   };
 };
 

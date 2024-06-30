@@ -15,8 +15,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     const item = JSON.parse(body);
 
-    if (!('price' in item) || !('description' in item) || !('title' in item)) {
-      return createNotFoundResponse({ message: 'Missing required filed. Please insert followinf data: price, title, description' });
+    if (!('price' in item) || !('description' in item) || !('title' in item) || !('count' in item)) {
+      return createNotFoundResponse({ message: 'Missing required filed. Please insert followinf data: price, title, description, count' });
     }
 
     if (typeof item.price !== 'number') {
@@ -25,6 +25,14 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     if (item.price <= 0) {
       return createNotFoundResponse({ message: 'Price must be greater than 0' });
+    }
+
+    if (typeof item.count !== 'number') {
+      return createNotFoundResponse({ message: 'Count must be a number' });
+    }
+
+    if (item.count <= 0) {
+      return createNotFoundResponse({ message: 'Count must be greater than 0' });
     }
 
     if (typeof item.title !== 'string' || item.title.length < 1) {
@@ -36,17 +44,24 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     }
 
     const productId = crypto.randomUUID();
-    const { $metadata: { httpStatusCode } } = await dynamodb.send(new PutCommand({
+    
+    await dynamodb.send(new PutCommand({
       TableName: String(process.env.PRODUCTS_TABLE_NAME),
       Item: {
-        ...item,
+        title: item.title,
+        description: item.description,
+        price: item.price,
         id: productId,
       },
     }));
 
-    if (httpStatusCode !== 200) {
-      throw new Error('Status code is not 200');
-    }
+    await dynamodb.send(new PutCommand({
+      TableName: String(process.env.STOCKS_TABLE_NAME),
+      Item: {
+        count: item.count,
+        product_id: productId,
+      },
+    }));
 
     return createSuccessResponse({ message: 'Product created', id: productId });
   } catch (error) {

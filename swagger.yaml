@@ -4,9 +4,12 @@ info:
   version: 1.0.0
 servers:
   - url: https://npfagdphr1.execute-api.us-east-1.amazonaws.com/prod
+  - url: https://ybnl3zrd61.execute-api.us-east-1.amazonaws.com/prod
 tags:
   - name: products
     description: Get products from Product Service Database
+  - name: import
+    description: Upload CSV files
 paths:
   /products:
     get:
@@ -23,6 +26,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Product'
+        '502':
+          description: Server error
+    post:
+      tags:
+        - products
+      summary: Create product
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostProduct'
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Product body invalid
+        '500':
+          description: Invalid product id
         '502':
           description: Server error
   
@@ -53,18 +76,12 @@ paths:
         '502':
           description: Server error
           
-  /products:
-    post:
+  /import:
+    get:
       tags:
-        - products
-      summary: Create product
-      operationId: createProduct
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PostProduct'
+        - import
+      summary: Get SignedURL
+      operationId: importProductsFile
       responses:
         '200':
           description: Successful operation
