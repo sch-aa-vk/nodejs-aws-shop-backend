@@ -9,7 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "cdk:deploy": "npm run build && cdk synth ImportServiceStack && cdk deploy ImportServiceStack",
+    "cdk:deploy": "npm run build && cdk synth --all && cdk deploy --all",
+    "cdk:deploy:products": "npm run build && cdk synth ProductServiceStack && cdk deploy ProductServiceStack",
+    "cdk:deploy:imports": "npm run build && cdk synth ImportServiceStack && cdk deploy ImportServiceStack",
     "cdk:destroy": "cdk destroy"
   },
   "devDependencies": {

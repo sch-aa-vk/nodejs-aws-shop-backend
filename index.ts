@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { ProductServiceStack } from './product-service/stack';
 import { ImportServiceStack } from './import-service/stack';

@@ -1,20 +1,30 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
-import { S3 } from "../storage";
-import { ListObjectsV2Command } from "@aws-sdk/client-s3";
-import { createErrorResponse, createSuccessResponse } from "../utils/response";
+import { APIGatewayProxyEvent, APIGatewayProxyEventQueryStringParameters } from "aws-lambda";
+import { s3Client } from "../storage";
+import { createErrorResponse, createNotFoundResponse, createSuccessResponse } from "../utils/response";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   console.log('Incomig request:', event);
 
   try {
-    const response = await S3.send(new ListObjectsV2Command({
-      Bucket: String(process.env.IMPORTS_BUCKET_NAME),
-      Prefix: 'uploaded/',
-    }));
+    const queryParams = event.queryStringParameters as APIGatewayProxyEventQueryStringParameters;
+    
+    if (!queryParams || !queryParams.name) {
+      return createNotFoundResponse({ message: 'Missing name parameter' });
+    }
 
-    return createSuccessResponse(response.Contents);
+    const name = queryParams.name;
+
+    const signedUrl = s3Client.getSignedUrl('putObject', {
+      Bucket: String(process.env.IMPORTS_BUCKET_NAME),
+      Key: `uploaded/${name}`,
+      ContentType: 'text/csv',
+      Expires: 60,
+    });
+
+    return createSuccessResponse(signedUrl);
   } catch (error) {
     console.error('Error inserting data:', error);
+
     return createErrorResponse(error);
   }
 };  

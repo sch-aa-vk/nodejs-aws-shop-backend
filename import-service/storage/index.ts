@@ -1,3 +1,3 @@
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3 } from 'aws-sdk';
 
-export const S3 = new S3Client({ region: String(process.env.CDK_DEFAULT_REGION) });
+export const s3Client = new S3({ region: String(process.env.CDK_DEFAULT_REGION) });
