@@ -5,6 +5,8 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
 import config from '../config';
 
 export class ProductServiceStack extends cdk.Stack {
@@ -20,6 +22,10 @@ export class ProductServiceStack extends cdk.Stack {
       queueName: 'nodejs-aws-shop-product-stack-catalogItemsQueue',
     });
 
+    const createProductTopic = new sns.Topic(this, 'CreateProductTopic', {
+      topicName: 'nodejs-aws-shop-product-stack-createProductTopic',
+    });
+
     const dynamodbPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['dynamodb:Scan', 'dynamodb:PutItem', 'dynamodb:GetItem'],
@@ -29,6 +35,12 @@ export class ProductServiceStack extends cdk.Stack {
     const sqsPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sqs:ReceiveMessage'],
+      resources: ['*'],
+    });
+
+    const snsPolicy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['sns:Publish'],
       resources: ['*'],
     });
 
@@ -76,6 +88,7 @@ export class ProductServiceStack extends cdk.Stack {
       environment: {
         PRODUCTS_TABLE_NAME: config.PRODUCTS_TABLE_NAME,
         STOCKS_TABLE_NAME: config.STOCKS_TABLE_NAME,
+        SNS_TOPIC_ARN: createProductTopic.topicArn,
         CDK_DEFAULT_REGION: config.CDK_DEFAULT_REGION,
       }
     });
@@ -86,6 +99,7 @@ export class ProductServiceStack extends cdk.Stack {
     catalogBatchProcessLambda.addToRolePolicy(dynamodbPolicy);
 
     catalogBatchProcessLambda.addToRolePolicy(sqsPolicy);
+    catalogBatchProcessLambda.addToRolePolicy(snsPolicy);
 
     const products = api.root.addResource('products');
     products.addMethod('GET', new apigateway.LambdaIntegration(getProductsListLambda));
@@ -94,6 +108,14 @@ export class ProductServiceStack extends cdk.Stack {
 
     catalogBatchProcessLambda.addEventSource(new lambdaEventSources.SqsEventSource(catalogItemsQueue, {
       batchSize: 5
+    }));
+
+    createProductTopic.addSubscription(new subs.EmailSubscription(config.MY_EMAIL, {
+      filterPolicy: {
+        count: sns.SubscriptionFilter.stringFilter({
+          allowlist: ['more than 100']
+        }),
+      },
     }));
   }
 }

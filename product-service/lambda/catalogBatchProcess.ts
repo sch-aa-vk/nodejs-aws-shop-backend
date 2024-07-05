@@ -1,7 +1,10 @@
 import { SQSEvent } from "aws-lambda";
+import { SNS } from 'aws-sdk';
 import { createErrorResponse, createNotFoundResponse, createSuccessResponse } from "../utils/response";
 import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { dynamodb } from "../database/dynamodbClient";
+
+const sns = new SNS({ region: String(process.env.CDK_DEFAULT_REGION) });
 
 export const handler = async (event: SQSEvent) => {
   console.log('Incomig request:', event);
@@ -56,6 +59,17 @@ export const handler = async (event: SQSEvent) => {
         product_id: productId,
       },
     }));
+
+    await sns.publish({
+      TopicArn: String(process.env.SNS_TOPIC_ARN),
+      Message: `Product ${body.title} created with id ${productId} and count ${body.count}`,
+      MessageAttributes: {
+        count: {
+          DataType: 'String',
+          StringValue: +body.count >= 100 ? "more than 100" : "less than 100",
+        },
+      }
+    }).promise();
 
     return createSuccessResponse({ message: 'Product created', id: productId });
   } catch (error) {
