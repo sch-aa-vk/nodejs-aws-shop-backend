@@ -1,4 +1,6 @@
 function createResponse(statusCode: number, body: any, headers: { [key: string]: string } = {}): { statusCode: number, headers: { [key: string]: string }, body: string } {
+  console.log('Creating response:', { statusCode, body, headers });
+
   return {
     statusCode,
     headers: { 
