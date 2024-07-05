@@ -5,13 +5,13 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import config from '../config';
 
-export class NodejsAwsShopBackendStack extends cdk.Stack {
+export class ProductServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const api = new apigateway.RestApi(this, 'nodejs-aws-shop-api', {
+    const api = new apigateway.RestApi(this, 'nodejs-aws-shop-product-stack-api', {
       restApiName: 'Node.js AWS Shop API',
-      description: 'The AWS CDK stack for the Node.js AWS Shop Backend API',
+      description: 'The AWS CDK Product stack for the Node.js AWS Shop Backend API',
     });
 
     const dynamodbPolicy = new iam.PolicyStatement({
@@ -22,9 +22,9 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
 
     const getProductsListLambda = new lambda.Function(this, 'getProductsList', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      code: lambda.Code.fromAsset('src'),
-      handler: `lambda/getProductsList.handler`,
-      functionName: `nodejs-aws-shop-getProductsList`,
+      code: lambda.Code.fromAsset('product-service'),
+      handler: 'lambda/getProductsList.handler',
+      functionName: 'nodejs-aws-shop-product-stack-getProductsList',
       environment: {
         PRODUCTS_TABLE_NAME: config.PRODUCTS_TABLE_NAME,
         STOCKS_TABLE_NAME: config.STOCKS_TABLE_NAME,
@@ -34,9 +34,9 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
 
     const getProductsByIdLambda = new lambda.Function(this, 'getProductsById', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      code: lambda.Code.fromAsset('src'),
-      handler: `lambda/getProductsById.handler`,
-      functionName: `nodejs-aws-shop-getProductsById`,
+      code: lambda.Code.fromAsset('product-service'),
+      handler: 'lambda/getProductsById.handler',
+      functionName: 'nodejs-aws-shop-product-stack-getProductsById',
       environment: {
         PRODUCTS_TABLE_NAME: config.PRODUCTS_TABLE_NAME,
         STOCKS_TABLE_NAME: config.STOCKS_TABLE_NAME,
@@ -46,9 +46,9 @@ export class NodejsAwsShopBackendStack extends cdk.Stack {
 
     const createProductLambda = new lambda.Function(this, 'createProduct', {
       runtime: lambda.Runtime.NODEJS_20_X,
-      code: lambda.Code.fromAsset('src'),
-      handler: `lambda/createProduct.handler`,
-      functionName: `nodejs-aws-shop-createProduct`,
+      code: lambda.Code.fromAsset('product-service'),
+      handler: 'lambda/createProduct.handler',
+      functionName: 'nodejs-aws-shop-product-stack-createProduct',
       environment: {
         PRODUCTS_TABLE_NAME: config.PRODUCTS_TABLE_NAME,
         STOCKS_TABLE_NAME: config.STOCKS_TABLE_NAME,
