@@ -1,7 +1,10 @@
 import { S3Event } from "aws-lambda";
+import { SQS } from 'aws-sdk';
 import { s3Client } from "../storage";
 import { createErrorResponse, createNotFoundResponse, createSuccessResponse } from "../utils/response";
 import * as csv from "csv-parser";
+
+const sqs = new SQS({ region: String(process.env.CDK_DEFAULT_REGION) });
 
 export const handler = async (event: S3Event) => {
   console.log('Incomig request:', event);
@@ -24,8 +27,11 @@ export const handler = async (event: S3Event) => {
       const csvParser = new Promise((resolve, reject) => {
         s3Stream
           .pipe(csv())
-          .on('data', (data: any) => {
-            console.log('Parsed data:', data);
+          .on('data', async (data: any) => {
+            await sqs.sendMessage({
+              QueueUrl: String(process.env.CATALOG_BATCH_PROCESS_QUEUE_URL),
+              MessageBody: JSON.stringify(data),
+            }).promise();
           })
           .on('end', async () => {
             console.log('CSV parsing completed');

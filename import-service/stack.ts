@@ -40,6 +40,12 @@ export class ImportServiceStack extends cdk.Stack {
       filters: [{ prefix: 'uploaded/' }],
     });
 
+    const sqsPolicy = new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['sqs:SendMessage'],
+      resources: ['*'],
+    });
+
     const importProductsFileLambda = new lambda.Function(this, 'importProductsFile', {
       runtime: lambda.Runtime.NODEJS_20_X,
       code: lambda.Code.fromAsset('import-service'),
@@ -58,6 +64,7 @@ export class ImportServiceStack extends cdk.Stack {
       functionName: 'nodejs-aws-shop-import-stack-importFileParser',
       environment: {
         IMPORTS_BUCKET_NAME: config.IMPORTS_BUCKET_NAME,
+        CATALOG_BATCH_PROCESS_QUEUE_URL: config.CATALOG_BATCH_PROCESS_QUEUE_URL,
         CDK_DEFAULT_REGION: config.CDK_DEFAULT_REGION,
       }
     });
@@ -73,5 +80,7 @@ export class ImportServiceStack extends cdk.Stack {
 
     importProductsFileLambda.addToRolePolicy(s3Policy);
     importFileParserLambda.addToRolePolicy(s3Policy);
+
+    importFileParserLambda.addToRolePolicy(sqsPolicy);
   }
 }

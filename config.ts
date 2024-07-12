@@ -9,6 +9,8 @@ interface ENV {
   PRODUCTS_TABLE_NAME: string;
   STOCKS_TABLE_NAME: string;
   IMPORTS_BUCKET_NAME: string;
+  CATALOG_BATCH_PROCESS_QUEUE_URL: string;
+  MY_EMAIL: string;
 }
 
 const getConfig = (): ENV => {
@@ -18,6 +20,8 @@ const getConfig = (): ENV => {
     PRODUCTS_TABLE_NAME: String(process.env.PRODUCTS_TABLE_NAME),
     STOCKS_TABLE_NAME: String(process.env.STOCKS_TABLE_NAME),
     IMPORTS_BUCKET_NAME: String(process.env.IMPORTS_BUCKET_NAME),
+    CATALOG_BATCH_PROCESS_QUEUE_URL: String(process.env.CATALOG_BATCH_PROCESS_QUEUE_URL),
+    MY_EMAIL: String(process.env.MY_EMAIL),
   };
 };
 
