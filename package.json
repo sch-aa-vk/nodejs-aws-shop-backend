@@ -12,6 +12,7 @@
     "cdk:deploy": "npm run build && cdk synth --all && cdk deploy --all",
     "cdk:deploy:products": "npm run build && cdk synth ProductServiceStack && cdk deploy ProductServiceStack",
     "cdk:deploy:imports": "npm run build && cdk synth ImportServiceStack && cdk deploy ImportServiceStack",
+    "cdk:deploy:authorizer": "npm run build && cdk synth AuthorizationServiceStack && cdk deploy AuthorizationServiceStack",
     "cdk:destroy": "cdk destroy"
   },
   "devDependencies": {

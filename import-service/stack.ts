@@ -11,6 +11,13 @@ export class ImportServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const basicAuthorizerFunctionArn = cdk.Fn.importValue('BasicAuthorizerFunctionArn');
+    const basicAuthorizerLambda = lambda.Function.fromFunctionArn(this, 'ImportedAuthorizerFunction', basicAuthorizerFunctionArn);
+
+    const basicAuthorizer = new apigateway.TokenAuthorizer(this, 'BasicAuthorizer', {
+      handler: basicAuthorizerLambda,
+    });
+
     const api = new apigateway.RestApi(this, 'nodejs-aws-shop-import-stack-api', {
       restApiName: 'Node.js AWS Shop API',
       description: 'The AWS CDK Import stack for the Node.js AWS Shop Backend API',
@@ -73,7 +80,8 @@ export class ImportServiceStack extends cdk.Stack {
     imports.addMethod('GET', new apigateway.LambdaIntegration(importProductsFileLambda), {
       requestParameters: {
         'method.request.querystring.name': true,
-      }
+      },
+      authorizer: basicAuthorizer,
     });
 
     importFileParserLambda.addEventSource(s3Event);
