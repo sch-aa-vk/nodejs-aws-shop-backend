@@ -11,6 +11,7 @@ interface ENV {
   IMPORTS_BUCKET_NAME: string;
   CATALOG_BATCH_PROCESS_QUEUE_URL: string;
   MY_EMAIL: string;
+  AUTHORIZATION_PASSWORD: string;
 }
 
 const getConfig = (): ENV => {
@@ -22,6 +23,7 @@ const getConfig = (): ENV => {
     IMPORTS_BUCKET_NAME: String(process.env.IMPORTS_BUCKET_NAME),
     CATALOG_BATCH_PROCESS_QUEUE_URL: String(process.env.CATALOG_BATCH_PROCESS_QUEUE_URL),
     MY_EMAIL: String(process.env.MY_EMAIL),
+    AUTHORIZATION_PASSWORD: String(process.env.AUTHORIZATION_PASSWORD),
   };
 };
 
