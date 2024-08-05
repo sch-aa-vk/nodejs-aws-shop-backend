@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from "aws-cdk-lib/aws-s3";
+import * as sqs from "aws-cdk-lib/aws-sqs";
 import { Construct } from 'constructs';
 import config from '../config';
 import { S3EventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -35,6 +36,12 @@ export class ImportServiceStack extends cdk.Stack {
         }
       ]
     });
+
+    const catalogItemsQueue = sqs.Queue.fromQueueArn(
+      this,
+      "CatalogItemsQueue",
+      cdk.Fn.importValue("CatalogItemsQueueArn")
+    );
 
     const s3Policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -71,7 +78,7 @@ export class ImportServiceStack extends cdk.Stack {
       functionName: 'nodejs-aws-shop-import-stack-importFileParser',
       environment: {
         IMPORTS_BUCKET_NAME: config.IMPORTS_BUCKET_NAME,
-        CATALOG_BATCH_PROCESS_QUEUE_URL: config.CATALOG_BATCH_PROCESS_QUEUE_URL,
+        CATALOG_BATCH_PROCESS_QUEUE_URL: catalogItemsQueue.queueUrl,
         CDK_DEFAULT_REGION: config.CDK_DEFAULT_REGION,
       }
     });
